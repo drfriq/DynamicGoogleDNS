@@ -22,7 +22,8 @@ namespace DynamicGoogleDNS
             logger = loggerFactory.CreateLogger<DynamicDNS>();
 
             var builder = new ConfigurationBuilder()
-                        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                        .SetBasePath(AppContext.BaseDirectory)
+                        .AddJsonFile("appsettings.json");
             config = DynamicConfigFactory.buildConfig(builder.Build());
         }
 

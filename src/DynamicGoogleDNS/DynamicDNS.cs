@@ -53,8 +53,6 @@ namespace DynamicGoogleDNS
                     }
                 }
             }
-
-            Console.ReadKey();
         }
     }
 }

@@ -12,7 +12,7 @@ namespace DynamicGoogleDNS
 
         public PriorIP()
         {
-            if(File.Exists(AppContext.BaseDirectory + "\\myip"))
+            if (File.Exists(AppContext.BaseDirectory + "\\myip"))
             {
                 ip = File.ReadAllText(AppContext.BaseDirectory + "\\myip");
             }
@@ -21,7 +21,7 @@ namespace DynamicGoogleDNS
         public void writeIP(string newip)
         {
             ip = newip;
-            File.WriteAllText(AppContext.BaseDirectory + "\\mpip", ip);
+            File.WriteAllText(AppContext.BaseDirectory + "\\myip", ip);
         }
     }
 }

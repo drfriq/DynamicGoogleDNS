@@ -6,7 +6,8 @@
   },
   "publishOptions": {
     "include": [
-      "appsettings.json"
+      "appsettings.json",
+      "logs"
     ]
   },
   "dependencies": {

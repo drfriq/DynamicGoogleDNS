@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
+using Serilog;
 
 namespace DynamicGoogleDNS
 {
@@ -16,15 +14,17 @@ namespace DynamicGoogleDNS
 
         public DynamicDNS()
         {
-            ILoggerFactory loggerFactory = new LoggerFactory()
-                .AddConsole();
-            logger = loggerFactory.CreateLogger<DynamicDNS>();
-
             var builder = new ConfigurationBuilder()
                         .SetBasePath(AppContext.BaseDirectory)
                         .AddJsonFile("appsettings.json");
             config = DynamicConfigFactory.buildConfig(builder.Build());
 
+            logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.LiterateConsole()
+                .WriteTo.File(config.logdirectory + "\\DynamicGoogleDns.log")
+                .CreateLogger();
+            
             client = new HttpClient();
             client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Chrome/41.0");
         }
@@ -37,7 +37,7 @@ namespace DynamicGoogleDNS
             {
                 // new ip -- lets update it
                 myip.writeIP(check.ip);
-                logger.LogInformation("New IP found: " + check.ip);
+                logger.Information("New IP found: " + check.ip);
 
                 string authInfo = Convert.ToBase64String(Encoding.ASCII.GetBytes(config.username + ":" + config.password));
                 client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", "Basic " + authInfo);
@@ -46,7 +46,7 @@ namespace DynamicGoogleDNS
                 var response = client.GetAsync(NicUri).Result;
                 if (!response.IsSuccessStatusCode)
                 {
-                    logger.LogError(response.ReasonPhrase + " email provided probably wrong");
+                    logger.Error(response.ReasonPhrase + " email provided probably wrong");
                 }
                 else
                 {
@@ -54,32 +54,32 @@ namespace DynamicGoogleDNS
                     switch (ResponseCode)
                     {
                         case "good":
-                            logger.LogInformation(myip.ip + " recorded with google");
+                            logger.Information(myip.ip + " recorded with google");
                             break;
                         case "nochg":
-                            logger.LogInformation("The supplied IP address is already set for this host. You should not attempt another update until your IP address changes.");
+                            logger.Information("The supplied IP address is already set for this host. You should not attempt another update until your IP address changes.");
                             break;
                         case "nohost":
-                            logger.LogError("The hostname does not exist, or does not have Dynamic DNS enabled.");
+                            logger.Error("The hostname does not exist, or does not have Dynamic DNS enabled.");
                             break;
                         case "badauth":
-                            logger.LogError("The username / password combination is not valid for the specified host.");
+                            logger.Error("The username / password combination is not valid for the specified host.");
                             break;
                         case "notfqdn":
-                            logger.LogError("The supplied hostname is not a valid fully-qualified domain name.");
+                            logger.Error("The supplied hostname is not a valid fully-qualified domain name.");
                             break;
                         case "badagent":
-                            logger.LogError("Your Dynamic DNS client is making bad requests. Ensure the user agent is set in the request, and that you’re only attempting to set an IPv4 address. IPv6 is not supported.");
+                            logger.Error("Your Dynamic DNS client is making bad requests. Ensure the user agent is set in the request, and that you’re only attempting to set an IPv4 address. IPv6 is not supported.");
                             break;
                         case "abuse":
-                            logger.LogError("Dynamic DNS access for the hostname has been blocked due to failure to interpret previous responses correctly.");
+                            logger.Error("Dynamic DNS access for the hostname has been blocked due to failure to interpret previous responses correctly.");
                             break;
                         case "911":
-                            logger.LogError("An error happened on our end. Wait 5 minutes and retry.");
+                            logger.Error("An error happened on our end. Wait 5 minutes and retry.");
                             myip.clear();
                             break;
                         default:
-                            logger.LogError(ResponseCode);
+                            logger.Error(ResponseCode);
                             break;
                     }
                 }

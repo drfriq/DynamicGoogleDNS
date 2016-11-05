@@ -11,6 +11,7 @@ namespace DynamicGoogleDNS
         public string username { get; set; }
         public string password { get; set; }
         public string hostname { get; set; }
+        public string logdirectory { get; set; }
     }
 
     public class DynamicConfigFactory
@@ -22,6 +23,7 @@ namespace DynamicGoogleDNS
             config.username = configurationSection.GetValue<string>("username");
             config.password = configurationSection.GetValue<string>("password");
             config.hostname = configurationSection.GetValue<string>("hostname");
+            config.logdirectory = configurationSection.GetValue<string>("logdirectory");
             return config;
         }
     }

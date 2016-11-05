@@ -23,5 +23,10 @@ namespace DynamicGoogleDNS
             ip = newip;
             File.WriteAllText(AppContext.BaseDirectory + "\\myip", ip);
         }
+
+        public void clear()
+        {
+            writeIP("");
+        }
     }
 }

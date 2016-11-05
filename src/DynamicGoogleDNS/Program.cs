@@ -13,6 +13,7 @@ namespace DynamicGoogleDNS
         {
             DynamicDNS dyndns = new DynamicDNS();
             dyndns.update();
+            Console.ReadKey();
         }
     }
 }

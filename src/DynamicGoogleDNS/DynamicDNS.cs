@@ -33,6 +33,12 @@ namespace DynamicGoogleDNS
         {
             PriorIP myip = new PriorIP();
             CheckIP check = new CheckIP("https://domains.google.com/checkip");
+            if(string.IsNullOrEmpty(check.ip))
+            {
+                logger.Error("checkip failed");
+                return;
+            }
+
             if (check.ip != myip.ip)
             {
                 // new ip -- lets update it

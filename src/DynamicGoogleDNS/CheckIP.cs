@@ -14,13 +14,21 @@ namespace DynamicGoogleDNS
         public CheckIP(string url)
         {
             client = new HttpClient();
-            ip = grabCheckUrl(url);
+            string newip = grabCheckUrl(url);
+            if(!string.IsNullOrEmpty(newip))
+            {
+                ip = newip;
+            }
         }
 
         public string grabCheckUrl(string url)
         {
             var response = client.GetAsync(url).Result;
-            return response.Content.ReadAsStringAsync().Result;
+            if (response.IsSuccessStatusCode)
+            {
+                return response.Content.ReadAsStringAsync().Result;
+            }
+            return "";
         }
     }
 }
